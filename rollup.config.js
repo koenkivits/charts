@@ -42,18 +42,20 @@ fs.readFile("src/css/charts.scss", (err, css) => {
 export default [
   {
     input: "src/js/index.js",
-    sourcemap: true,
     output: [
       {
+        name: "frappe",
         file: "docs/assets/js/frappe-charts.min.js",
         format: "iife",
+        sourcemap: true,
       },
       {
+        name: "frappe",
         file: pkg.browser,
         format: "umd",
+        sourcemap: true,
       },
     ],
-    name: "frappe",
     plugins: [
       postcssPlugin({
         preprocessor: (content, id) =>
@@ -69,7 +71,7 @@ export default [
       }),
       babel({
         exclude: "node_modules/**",
-        plugins: ["external-helpers"],
+        // plugins: ["@babel/plugin-external-helpers"],
         babelHelpers: "bundled", // TODO this should probably be 'runtime'?
         // https://github.com/rollup/plugins/tree/master/packages/babel#babelhelpers
       }),

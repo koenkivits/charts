@@ -37,7 +37,7 @@ test: clean
 		NODE_ENV=test								\
 	$(NODEBIN)/nyc									\
 	$(NODEBIN)/mocha								\
-		--require $(NODEMOD)/babel-register			\
+		--require $(NODEMOD)/@babel/register			\
 		--recursive									\
 		$(SRCDIR)/js/**/test/*.test.js
 

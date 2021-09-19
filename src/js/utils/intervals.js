@@ -140,7 +140,7 @@ export function calcChartIntervals(values, withMinimum = false) {
     let pseudoMaxValue = Math.abs(minValue);
     let pseudoMinValue = Math.abs(maxValue);
 
-    exponent = normalize(pseudoMaxValue)[1];
+    /* exponent = normalize(pseudoMaxValue)[1]; // TODO unused? */
     if (!withMinimum) {
       intervals = getChartIntervals(pseudoMaxValue);
     } else {
