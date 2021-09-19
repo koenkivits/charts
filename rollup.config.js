@@ -1,10 +1,10 @@
 import pkg from './package.json';
 
 // Rollup plugins
-import babel from 'rollup-plugin-babel';
-import { eslint } from 'rollup-plugin-eslint';
+import babel from '@rollup/plugin-babel';
+import eslint from '@rollup/plugin-eslint';
 import replace from 'rollup-plugin-replace';
-import uglify from 'rollup-plugin-uglify-es';
+import { terser } from 'rollup-plugin-terser';
 import sass from 'node-sass';
 
 // PostCSS plugins
@@ -20,21 +20,23 @@ import autoprefixer from 'autoprefixer';
 import fs from 'fs';
 
 fs.readFile('src/css/charts.scss', (err, css) => {
-    postcss([precss, autoprefixer])
-        .process(css, { from: 'src/css/charts.scss', to: 'src/css/charts.css' })
-        .then(result => {
+	postcss([precss, autoprefixer])
+		.process(css, { from: 'src/css/charts.scss', to: 'src/css/charts.css' })
+		.then(result => {
 			let options = {
 				level: {
 					1: {
 						removeQuotes: false,
 					}
 				}
-			}
+			};
 			let output = new CleanCSS(options).minify(result.css);
 			let res = JSON.stringify(output.styles).replace(/"/g, "'");
 			let js = `export const CSSTEXT = "${res.slice(1, -1)}";`;
-            fs.writeFile('src/css/chartsCss.js', js);
-        });
+			fs.writeFileSync('src/css/chartsCss.js', js, (err) => {
+				if (err) throw err;
+			});
+		});
 });
 
 export default [
@@ -55,8 +57,8 @@ export default [
 		plugins: [
 			postcssPlugin({
 				preprocessor: (content, id) => new Promise((resolve, reject) => {
-					const result = sass.renderSync({ file: id })
-					resolve({ code: result.css.toString() })
+					const result = sass.renderSync({ file: id });
+					resolve({ code: result.css.toString() });
 				}),
 				extensions: [ '.scss' ],
 				plugins: [
@@ -72,13 +74,15 @@ export default [
 			}),
 			babel({
 				exclude: 'node_modules/**',
-				plugins: ['external-helpers']
+				plugins: ['external-helpers'],
+				babelHelpers: 'bundled', // TODO this should probably be 'runtime'?
+				// https://github.com/rollup/plugins/tree/master/packages/babel#babelhelpers
 			}),
 			replace({
 				exclude: 'node_modules/**',
 				ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
 			}),
-			uglify()
+			terser()
 		]
 	},
 	{
@@ -94,8 +98,8 @@ export default [
 		plugins: [
 			postcssPlugin({
 				preprocessor: (content, id) => new Promise((resolve, reject) => {
-					const result = sass.renderSync({ file: id })
-					resolve({ code: result.css.toString() })
+					const result = sass.renderSync({ file: id });
+					resolve({ code: result.css.toString() });
 				}),
 				extensions: [ '.scss' ],
 				plugins: [
@@ -134,8 +138,8 @@ export default [
 		plugins: [
 			postcssPlugin({
 				preprocessor: (content, id) => new Promise((resolve, reject) => {
-					const result = sass.renderSync({ file: id })
-					resolve({ code: result.css.toString() })
+					const result = sass.renderSync({ file: id });
+					resolve({ code: result.css.toString() });
 				}),
 				extensions: [ '.scss' ],
 				plugins: [
@@ -156,7 +160,7 @@ export default [
 				exclude: 'node_modules/**',
 				ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
 			}),
-			uglify()
+			terser()
 		],
 	},
 	{
@@ -170,8 +174,8 @@ export default [
 		plugins: [
 			postcssPlugin({
 				preprocessor: (content, id) => new Promise((resolve, reject) => {
-					const result = sass.renderSync({ file: id })
-					resolve({ code: result.css.toString() })
+					const result = sass.renderSync({ file: id });
+					resolve({ code: result.css.toString() });
 				}),
 				extensions: [ '.scss' ],
 				extract: 'dist/frappe-charts.min.css',

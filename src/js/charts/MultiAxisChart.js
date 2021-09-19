@@ -84,7 +84,7 @@ export default class MultiAxisChart extends AxisChart {
 				mode: 'span',
 				stroke: this.colors[i],
 				className: 'y-axis-guide'
-			})
+			});
 		});
 	}
 

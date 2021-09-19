@@ -120,7 +120,7 @@ export function round(d) {
  * Creates a deep clone of an object
  * @param {Object} candidate Any Object
  */
- export function deepClone(candidate) {
+export function deepClone(candidate) {
 	let cloned, value, key;
   
 	if (candidate instanceof Date) {
@@ -140,4 +140,4 @@ export function round(d) {
 	}
   
 	return cloned;
-  }
+}
