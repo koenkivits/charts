@@ -14,14 +14,24 @@
     "dist"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "rollup -c --watch",
-    "dev": "npm-run-all --parallel watch",
     "build": "rollup -c",
+    "test": "cross-env NODE_ENV=test nyc mocha src/**/*.test.js",
+    "watch": "rollup -c --watch",
     "prepare": "husky install"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
+  },
+  "nyc": {
+    "require": [
+      "@babel/register"
+    ],
+    "reporter": [
+      "lcov",
+      "text"
+    ],
+    "sourceMap": false,
+    "instrument": false
   },
   "repository": {
     "type": "git",
