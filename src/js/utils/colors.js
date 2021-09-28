@@ -1,3 +1,5 @@
+import { DEFAULT_COLORS } from "./constants";
+
 const PRESET_COLOR_MAP = {
   "light-blue": "#7cd6fd",
   blue: "#5e64ff",
@@ -53,3 +55,17 @@ export const getColor = (color) => {
   }
   return PRESET_COLOR_MAP[color] || color;
 };
+
+export function validateColors(colors, type) {
+  const validColors = [];
+  colors = (colors || []).concat(DEFAULT_COLORS[type]);
+  colors.forEach((string) => {
+    const color = getColor(string);
+    if (!isValidColor(color)) {
+      console.warn('"' + string + '" is not a valid color.');
+    } else {
+      validColors.push(color);
+    }
+  });
+  return validColors;
+}
