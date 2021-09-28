@@ -1,6 +1,6 @@
 <script>
   export let data;
-  export let colors = DEFAULT_COLORS.pie;
+  export let colors;
 
   export let startAngle = 0;
   export let clockWise = false;
@@ -8,9 +8,8 @@
   import { getDimensions } from './BaseChart.svelte';
   import { getPositionByAngle } from "../../js/utils/helpers";
   import { makeArcPathStr, makeCircleStr } from "../../js/utils/draw";
-  import { FULL_ANGLE, DEFAULT_COLORS } from "../../js/utils/constants";
+  import { FULL_ANGLE } from "../../js/utils/constants";
   import { calc, configure } from "./aggregation";
-  import { validateColors } from '../../js/utils/colors';
 
   let sliceStrings = [];
 
@@ -63,7 +62,6 @@
     });
   }
 
-  const validColors = validateColors(colors, 'pie');
   // TODO mouse interaction
 </script>
 
@@ -73,7 +71,7 @@
     <path
       d={sliceString}
       class="pie-path"
-      style={`stroke: none; fill: ${validColors[index]}; transition: transform: .3s;`}
+      style={`stroke: none; fill: ${colors[index]}; transition: transform: .3s;`}
     />
   {/each}
 </g>

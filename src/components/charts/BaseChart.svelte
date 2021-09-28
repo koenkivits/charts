@@ -2,9 +2,13 @@
   import { getContext, setContext } from "svelte";
 
   const dimensionsContextKey = {};
-
   export function getDimensions() {
     return getContext(dimensionsContextKey);
+  }
+
+  const measuresContextKey = {};
+  export function getMeasures() {
+    return getContext(measuresContextKey);
   }
 </script>
 
@@ -51,6 +55,8 @@
   if (!config.showLegend) {
     measures.legendHeight = 0;
   }
+
+  setContext(measuresContextKey, measures);
 
   let container;
   let argHeight = height || measures.baseHeight;
@@ -121,5 +127,13 @@
     >
       <slot />
     </g>
+    {#if $$slots.legend}
+      <g
+        class="chart-legend"
+        transform={`translate(${getLeftOffset(measures)}, ${getTopOffset(measures) + $dimensions.height + measures.paddings.bottom})`}
+      >
+        <slot name="legend" />
+      </g>
+    {/if}
   </svg>
 </div>
