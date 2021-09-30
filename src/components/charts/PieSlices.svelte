@@ -17,6 +17,8 @@
 
   const dimensions = getDimensions();
   $: {
+    // TODO this reactive block _shouldn't be necessary. I think
+
     const config = configure({}); // TODO
     const { sliceTotals, grandTotal } = calc(config, colors, data);
 
