@@ -11,18 +11,18 @@
 />
 
 <Template let:args>
-  <div style="width: 500px">
+  <div style="width: 700px; height: 300px">
     <PieChart
       data={{
-        labels: ["stuff", "thing"],
+        labels: ["stuff", "thing", "other"],
         datasets: [
           {
           name: "thing",
-          values: [5, 2],
+          values: [5, 2, 5],
           },
           {
           name: "other",
-          values: [3, 2],
+          values: [3, 2, 1],
           }
         ],
       }}

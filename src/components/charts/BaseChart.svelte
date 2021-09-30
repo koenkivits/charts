@@ -78,6 +78,7 @@
   const dimensions = writable({});
   setContext(dimensionsContextKey, dimensions);
 
+  // TODO https://svelte.dev/docs#Block-level_element_bindings ?
   $: baseHeight = argHeight;
   $: baseWidth = container ? getElementContentWidth(container.parentNode) : 0;
   $: {

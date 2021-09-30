@@ -17,7 +17,7 @@
 
   // TODO dedup from PieSlices
   const config = configure({}); // TODO
-  const { sliceTotals, labels, grandTotal } = calc(config, colors, data);
+  const { sliceTotals, labels } = calc(config, colors, data);
 </script>
 
 <svelte:options namespace="svg" />

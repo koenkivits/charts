@@ -2,6 +2,7 @@
   export let data;
   export let colors;
 
+  export let hoverRadio = 0.1;
   export let startAngle = 0;
   export let clockWise = false;
 
@@ -11,19 +12,21 @@
   import { FULL_ANGLE } from "../../js/utils/constants";
   import { calc, configure } from "./aggregation";
 
-  let sliceStrings = [];
+  let hoverIndex = null;
+  let slices = [];
 
   const dimensions = getDimensions();
   $: {
     const config = configure({}); // TODO
     const { sliceTotals, grandTotal } = calc(config, colors, data);
 
-    sliceStrings = [];
+    slices = [];
 
     const center = {
       x: $dimensions.width / 2,
       y: $dimensions.height / 2,
     };
+
     const radius = $dimensions.height > $dimensions.width ? center.x : center.y;
 
     let curAngle = 180 - startAngle;
@@ -56,22 +59,65 @@
               radius,
               clockWise,
               largeArc
-            );
+          );
 
-      sliceStrings.push(curPath);
+      slices.push({
+        path: curPath,
+        activeTransform: calTranslateByAngle(radius, startAngle, diffAngle),
+      });
     });
   }
 
-  // TODO mouse interaction
+  function calTranslateByAngle(radius, startAngle, diffAngle) {
+    const position = getPositionByAngle(
+      startAngle + diffAngle / 2,
+      radius
+    );
+    return `translate(${position.x * hoverRadio}px,${
+      position.y * hoverRadio
+    }px)`;
+  }
+
+  function handleMouseMove(evt) {
+    const targetIndex = evt.target.dataset.index;
+    if (typeof targetIndex !== "undefined") {
+      hoverIndex = Number(targetIndex);
+    }
+  }
+
+  function handleMouseOut(evt) {
+    const targetIndex = evt.target.dataset.index;
+    if (
+      typeof targetIndex !== "undefined" &&
+      Number(targetIndex) === hoverIndex
+    ) {
+      hoverIndex = undefined;
+    }
+  }
+
+  // TODO tooltip
 </script>
 
+<style>
+  .pie-slice {
+    stroke: none;
+    transition: transform .3s, filter .3s;
+  }
+
+  .pie-slice:hover {
+    filter: brightness(125%);
+    transform: var(--active-transform);
+  }
+</style>
+
 <svelte:options namespace="svg" />
-<g class="pie-slices">
-  {#each sliceStrings as sliceString, index}
+<g class="pie-slices" on:mousemove={handleMouseMove} on:mouseout={handleMouseOut}>
+  {#each slices as slice, index}
     <path
-      d={sliceString}
-      class="pie-path"
-      style={`stroke: none; fill: ${colors[index]}; transition: transform: .3s;`}
+      d={slice.path}
+      class="pie-slice"
+      data-index={index}
+      style={`fill: ${colors[index]}; --active-transform: ${slice.activeTransform};`}
     />
   {/each}
 </g>
