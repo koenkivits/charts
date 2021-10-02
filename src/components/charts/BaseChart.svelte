@@ -37,7 +37,7 @@
   import { writable } from "svelte/store";
 
   // this.realData = this.prepareData(options.data);
-  // this.data = this.prepareFirstData(this.realData);
+  // this.data = this.prepareFirstData(this.realData); // TODO?
 
   let config = {
     showTooltip: true, // calculate
@@ -56,6 +56,12 @@
     measures.legendHeight = 0;
   }
 
+  if (type === 'pie') {
+    // TODO this shouldn't be necessary
+    // (this probably needs fixing for other types as well)
+    measures.paddings.left = measures.paddings.right;
+  }
+
   setContext(measuresContextKey, measures);
 
   let container;
@@ -63,6 +69,7 @@
   let baseHeight = argHeight;
   let baseWidth = container ? getElementContentWidth(container.parentNode) : 0;
 
+  console.log(measures);
   // TODO isNavigable
   // TODO makeTooltip()
   // TODO calc()

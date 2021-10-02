@@ -33,7 +33,7 @@ export const BASE_MEASURES = {
   paddings: {
     top: 20,
     bottom: 40,
-    left: 30,
+    left: 30, // TODO this causes pie charts to be off center
     right: 10,
   },
 

@@ -29,6 +29,8 @@
       y: $dimensions.height / 2,
     };
 
+    console.log(center);
+
     const radius = $dimensions.height > $dimensions.width ? center.x : center.y;
 
     let curAngle = 180 - startAngle;
