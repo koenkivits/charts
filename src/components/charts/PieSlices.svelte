@@ -12,15 +12,15 @@
   import { FULL_ANGLE } from "../../js/utils/constants";
   import { calc, configure } from "./aggregation";
 
+  const config = configure({}); // TODO
+  const { sliceTotals, grandTotal } = calc(config, colors, data);
+
   let hoverIndex = null;
   let slices = [];
 
   const dimensions = getDimensions();
   $: {
     // TODO this reactive block _shouldn't be necessary. I think
-
-    const config = configure({}); // TODO
-    const { sliceTotals, grandTotal } = calc(config, colors, data);
 
     slices = [];
 
