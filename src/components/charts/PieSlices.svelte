@@ -97,6 +97,7 @@
     }
   }
 
+  // TODO animation
   // TODO tooltip
 </script>
 
