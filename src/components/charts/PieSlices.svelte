@@ -1,6 +1,7 @@
 <script>
   export let data;
   export let colors;
+  export let labels;
 
   export let hoverRadio = 0.1;
   export let startAngle = 0;
@@ -11,6 +12,10 @@
   import { makeArcPathStr, makeCircleStr } from "../../js/utils/draw";
   import { FULL_ANGLE } from "../../js/utils/constants";
   import { calc, configure } from "./aggregation";
+  import { getTooltip } from "./tooltip";
+  import { getOffset } from '../../js/utils/dom';
+
+  const tooltip = getTooltip();
 
   const config = configure({}); // TODO
   const { sliceTotals, grandTotal } = calc(config, colors, data);
@@ -84,6 +89,21 @@
     const targetIndex = evt.target.dataset.index;
     if (typeof targetIndex !== "undefined") {
       hoverIndex = Number(targetIndex);
+
+      const svg = evt.target.closest("svg");
+      let g_off = getOffset(svg);
+      let x = evt.pageX - g_off.left + 10;
+      let y = evt.pageY - g_off.top - 10;
+
+      tooltip.update({
+        x,
+        y,
+        visible: true,
+        title: {
+          name: `${labels[hoverIndex]}: `,
+          value: `${((sliceTotals[hoverIndex] * 100) / grandTotal).toFixed(1)}%`,
+        }
+      });
     }
   }
 
@@ -94,6 +114,9 @@
       Number(targetIndex) === hoverIndex
     ) {
       hoverIndex = undefined;
+      tooltip.update({
+        visible: false,
+      });
     }
   }
 

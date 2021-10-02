@@ -17,12 +17,15 @@
   export let type = "";
 
   export let height;
+  export let colors;
 
   export let isNavigable = false;
   export let animate = true;
   export let truncateLegends = true;
 
   import Text from "./draw/Text.svelte";
+  import Tooltip from "../Tooltip.svelte";
+  import { initTooltip } from "./tooltip";
   import {
     $ as _$,
     getElementContentWidth
@@ -65,6 +68,7 @@
   setContext(measuresContextKey, measures);
 
   let container;
+  let containerWidth = 0;
   let argHeight = height || measures.baseHeight;
   let baseHeight = argHeight;
 
@@ -96,6 +100,9 @@
     };
   }
 
+  const tooltip = initTooltip({
+    colors,
+  });
   // TODO independentWidth
 </script>
 
@@ -110,7 +117,7 @@
   }
 </style>
 
-<div class="chart-container" bind:this={container}>
+<div class="chart-container" bind:this={container} bind:offsetWidth={containerWidth}>
   <svg
     xmlns="http://www.w3.org/2000/svg"
     class="frappe-chart chart"
@@ -145,4 +152,5 @@
       </g>
     {/if}
   </svg>
+  <Tooltip {...$tooltip} {containerWidth} />
 </div>

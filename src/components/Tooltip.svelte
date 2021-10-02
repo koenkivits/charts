@@ -1,11 +1,13 @@
 <script>
-	import { TOOLTIP_POINTER_TRIANGLE_HEIGHT } from "../utils/constants";
+  import { TOOLTIP_POINTER_TRIANGLE_HEIGHT } from "../js/utils/constants";
 
   export let colors;
   export let containerWidth;
   export let index; // ?? (default should be -1 btw?
-  export let titleName = "";
-  export let titleValue = "";
+  export let title = {
+    name: "",
+    value: "",
+  };
   export let listValues = [];
   export let titleValueFirst = false; // TODO this could be handled with CSS probably?
 
@@ -18,15 +20,17 @@
 	let width = 0;
   let height = 0;
 
-  let top = y - height - TOOLTIP_POINTER_TRIANGLE_HEIGHT;
-  let left = x - width / 2;
-  let maxLeft = containerWidth - width;
+  $: top = y - height - TOOLTIP_POINTER_TRIANGLE_HEIGHT;
+  $: left = x - width / 2;
+  $: maxLeft = containerWidth - width;
 
-  let pointerOffset = '0px';
-  if (left < 0) {
-    pointerOffset = `${left}px`;
-  } else if (left > maxOffset) {
-    pointerOffset = `${left - maxLeft}px`;
+  $: pointerOffset = '0px';
+  $: {
+    if (left < 0) {
+      pointerOffset = `${left}px`;
+    } else if (left > maxLeft) {
+      pointerOffset = `${left - maxLeft}px`;
+    }
   }
 
   let listItems = listValues.map((set, key) => ({
@@ -123,9 +127,9 @@
 >
   <span class="title">
     {#if titleValueFirst}
-      <strong>{titleValue}</strong>{titleName}
+      <strong>{title.value}</strong>{title.name}
     {:else}
-      {titleName}<strong>{titleValue}</strong>
+      {title.name}<strong>{title.value}</strong>
     {/if}
   </span>
   <ul class="data-point-list">
