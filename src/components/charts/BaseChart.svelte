@@ -67,9 +67,10 @@
   let container;
   let argHeight = height || measures.baseHeight;
   let baseHeight = argHeight;
+
+  // TODO make independent from parentNode. It shouldn't be necessary?
   let baseWidth = container ? getElementContentWidth(container.parentNode) : 0;
 
-  console.log(measures);
   // TODO isNavigable
   // TODO makeTooltip()
   // TODO calc()
