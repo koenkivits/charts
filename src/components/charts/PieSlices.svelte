@@ -18,6 +18,10 @@
   // TODO SSR responsiveness
   // https://codepen.io/gionkunz/pen/KDvLj
 
+  // TODO accessibility
+  // - https://www.sarasoueidan.com/blog/accessible-data-charts-for-khan-academy-2018-annual-report/
+  // - https://blog.tenon.io/accessible-charts-with-aria/
+
   const tooltip = getTooltip();
 
   const config = configure({}); // TODO
