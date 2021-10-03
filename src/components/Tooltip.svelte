@@ -24,13 +24,17 @@
   $: left = x - width / 2;
   $: maxLeft = containerWidth - width;
 
-  $: pointerOffset = '0px';
+  let pointerOffset = '0px';
   $: {
     if (left < 0) {
       pointerOffset = `${left}px`;
     } else if (left > maxLeft) {
       pointerOffset = `${left - maxLeft}px`;
+    } else {
+      pointerOffset = '0px';
     }
+
+    console.log('LEFT', left, maxLeft, pointerOffset);
   }
 
   let listItems = listValues.map((set, key) => ({

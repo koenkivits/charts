@@ -92,8 +92,9 @@
 
       const svg = evt.target.closest("svg");
       let g_off = getOffset(svg);
-      let x = evt.pageX - g_off.left + 10;
-      let y = evt.pageY - g_off.top - 10;
+      let x = evt.pageX - g_off.left; // TODO this used to do +10, probably to compensate for
+                                      //      the off-center charts in Frappe?
+      let y = evt.pageY - g_off.top - 10; // TODO where does this 10 come from?
 
       tooltip.update({
         x,
