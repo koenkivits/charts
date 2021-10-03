@@ -33,8 +33,6 @@
     } else {
       pointerOffset = '0px';
     }
-
-    console.log('LEFT', left, maxLeft, pointerOffset);
   }
 
   let listItems = listValues.map((set, key) => ({
