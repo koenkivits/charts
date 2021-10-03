@@ -2,17 +2,20 @@
   export let totals;
   export let colors;
   export let labels;
-  export let type = 'pie';
+  export let type = 'pie'; // can also be 'donut'
 
+  export let strokeWidth = 30; // only applicable to type=donut
   export let hoverRadio = 0.1;
   export let startAngle = 0;
   export let clockWise = false;
 
   import { getDimensions } from './BaseChart.svelte';
   import { getPositionByAngle } from "../../js/utils/helpers";
-  import { makeArcPathStr, makeCircleStr } from "../../js/utils/draw";
+  import { makeArcPathStr, makeCircleStr, makeStrokeCircleStr, makeArcStrokePathStr } from "../../js/utils/draw";
   import { getTooltip } from "./tooltip";
   import { getOffset } from '../../js/utils/dom';
+
+  strokeWidth = type === 'donut' ? strokeWidth : 0;
 
   // TODO SSR responsiveness
   // https://codepen.io/gionkunz/pen/KDvLj
@@ -40,7 +43,7 @@
     x: $dimensions.width / 2,
     y: $dimensions.height / 2,
   };
-  $: radius = $dimensions.height > $dimensions.width ? center.x : center.y;
+  $: radius = ($dimensions.height > $dimensions.width ? center.x : center.y) - strokeWidth / 2;
 
   $: baseAngle = 180 - startAngle;
   $: slices = totals.map((total, index) => {
@@ -52,11 +55,19 @@
     const endPosition = getPositionByAngle(sliceStartAngle + sliceAngle, radius);
 
     return {
-      path: makeFillPath(sliceAngle, startPosition, endPosition),
+      path: makePath(sliceAngle, startPosition, endPosition),
       color: colors[index],
       activeTransform: calTranslateByAngle(radius, sliceStartAngle, sliceAngle),
     };
   });
+
+  function makePath(sliceAngle, startPosition, endPosition) {
+    if (type === 'donut') {
+      return makeStrokePath(sliceAngle, startPosition, endPosition);
+    } else {
+      return makeFillPath(sliceAngle, startPosition, endPosition);
+    }
+  }
 
   function makeFillPath(sliceAngle, startPosition, endPosition) {
     const absSliceAngle = Math.abs(sliceAngle);
@@ -73,6 +84,31 @@
             largeArc
           )
         : makeArcPathStr(
+            startPosition,
+            endPosition,
+            center,
+            radius,
+            clockWise,
+            largeArc
+        )
+    );
+  }
+
+  function makeStrokePath(sliceAngle, startPosition, endPosition) {
+    const absSliceAngle = Math.abs(sliceAngle);
+    const largeArc = absSliceAngle > 180 ? 1 : 0;
+
+    return (
+      absSliceAngle === 360
+        ? makeStrokeCircleStr(
+            startPosition,
+            endPosition,
+            center,
+            radius,
+            clockWise,
+            largeArc
+          )
+        : makeArcStrokePathStr(
             startPosition,
             endPosition,
             center,
@@ -147,10 +183,21 @@
     fill: var(--slice-color);
     stroke: none;
   }
+
+  .slice--donut {
+    fill: none;
+    stroke: var(--slice-color);
+    stroke-width: var(--stroke-width);
+  }
 </style>
 
 <svelte:options namespace="svg" />
-<g class="slices" on:mousemove={handleMouseMove} on:mouseout={handleMouseOut}>
+<g
+  class="slices"
+  on:mousemove={handleMouseMove}
+  on:mouseout={handleMouseOut}
+  style={`--stroke-width: ${strokeWidth}`}
+>
   {#each slices as slice, index}
     <path
       d={slice.path}
