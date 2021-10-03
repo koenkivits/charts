@@ -15,6 +15,9 @@
   import { getTooltip } from "./tooltip";
   import { getOffset } from '../../js/utils/dom';
 
+  // TODO SSR responsiveness
+  // https://codepen.io/gionkunz/pen/KDvLj
+
   const tooltip = getTooltip();
 
   const config = configure({}); // TODO
