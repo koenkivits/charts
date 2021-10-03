@@ -1,7 +1,8 @@
 <script>
-  export let data;
+  export let totals;
   export let colors;
   export let labels;
+  export let type = 'pie';
 
   export let hoverRadio = 0.1;
   export let startAngle = 0;
@@ -10,8 +11,6 @@
   import { getDimensions } from './BaseChart.svelte';
   import { getPositionByAngle } from "../../js/utils/helpers";
   import { makeArcPathStr, makeCircleStr } from "../../js/utils/draw";
-  import { FULL_ANGLE } from "../../js/utils/constants";
-  import { calc, configure } from "./aggregation";
   import { getTooltip } from "./tooltip";
   import { getOffset } from '../../js/utils/dom';
 
@@ -22,64 +21,66 @@
   // - https://www.sarasoueidan.com/blog/accessible-data-charts-for-khan-academy-2018-annual-report/
   // - https://blog.tenon.io/accessible-charts-with-aria/
 
+  const dimensions = getDimensions();
   const tooltip = getTooltip();
-
-  const config = configure({}); // TODO
-  const { sliceTotals, grandTotal } = calc(config, colors, data);
 
   let hoverIndex = null;
   let slices = [];
 
-  const dimensions = getDimensions();
-  $: {
-    // TODO this reactive block _shouldn't be necessary. I think
+  function sum(values) {
+    return values.reduce((a, b) => a + b, 0);
+  }
 
-    slices = [];
+  function getValueAngle(value) {
+    return value / grandTotal * 360 * (clockWise ? -1 : 1);
+  }
 
-    const center = {
-      x: $dimensions.width / 2,
-      y: $dimensions.height / 2,
+  $: grandTotal = sum(totals);
+  $: center = {
+    x: $dimensions.width / 2,
+    y: $dimensions.height / 2,
+  };
+  $: radius = $dimensions.height > $dimensions.width ? center.x : center.y;
+
+  $: baseAngle = 180 - startAngle;
+  $: slices = totals.map((total, index) => {
+    const sliceAngle = getValueAngle(total);
+
+    const sliceStartAngle = getValueAngle(sum(totals.slice(0, index))) + baseAngle;
+
+    const startPosition = getPositionByAngle(sliceStartAngle, radius);
+    const endPosition = getPositionByAngle(sliceStartAngle + sliceAngle, radius);
+
+    return {
+      path: makeFillPath(sliceAngle, startPosition, endPosition),
+      color: colors[index],
+      activeTransform: calTranslateByAngle(radius, sliceStartAngle, sliceAngle),
     };
+  });
 
-    const radius = $dimensions.height > $dimensions.width ? center.x : center.y;
+  function makeFillPath(sliceAngle, startPosition, endPosition) {
+    const absSliceAngle = Math.abs(sliceAngle);
+    const largeArc = absSliceAngle > 180 ? 1 : 0;
 
-    let curAngle = 180 - startAngle;
-    sliceTotals.forEach((total) => {
-      const startAngle = curAngle;
-      const originDiffAngle = (total / grandTotal) * FULL_ANGLE;
-      const largeArc = originDiffAngle > 180 ? 1 : 0;
-      const diffAngle = clockWise ? -originDiffAngle : originDiffAngle;
-      const endAngle = (curAngle = curAngle + diffAngle);
-      const startPosition = getPositionByAngle(startAngle, radius);
-      const endPosition = getPositionByAngle(endAngle, radius);
-
-      let curStart, curEnd;
-      curStart = startPosition;
-      curEnd = endPosition;
-      const curPath =
-        originDiffAngle === 360
-          ? makeCircleStr(
-              curStart,
-              curEnd,
-              center,
-              radius,
-              clockWise,
-              largeArc
-            )
-          : makeArcPathStr(
-              curStart,
-              curEnd,
-              center,
-              radius,
-              clockWise,
-              largeArc
-          );
-
-      slices.push({
-        path: curPath,
-        activeTransform: calTranslateByAngle(radius, startAngle, diffAngle),
-      });
-    });
+    return (
+      absSliceAngle === 360
+        ? makeCircleStr(
+            startPosition,
+            endPosition,
+            center,
+            radius,
+            clockWise,
+            largeArc
+          )
+        : makeArcPathStr(
+            startPosition,
+            endPosition,
+            center,
+            radius,
+            clockWise,
+            largeArc
+        )
+    );
   }
 
   function calTranslateByAngle(radius, startAngle, diffAngle) {
@@ -109,7 +110,7 @@
         visible: true,
         title: {
           name: `${labels[hoverIndex]}: `,
-          value: `${((sliceTotals[hoverIndex] * 100) / grandTotal).toFixed(1)}%`,
+          value: `${((totals[hoverIndex] * 100) / grandTotal).toFixed(1)}%`,
         }
       });
     }
@@ -133,25 +134,29 @@
 </script>
 
 <style>
-  .pie-slice {
-    stroke: none;
+  .slice {
     transition: transform .3s, filter .3s;
   }
 
-  .pie-slice:hover {
+  .slice:hover {
     filter: brightness(125%);
     transform: var(--active-transform);
+  }
+
+  .slice--pie {
+    fill: var(--slice-color);
+    stroke: none;
   }
 </style>
 
 <svelte:options namespace="svg" />
-<g class="pie-slices" on:mousemove={handleMouseMove} on:mouseout={handleMouseOut}>
+<g class="slices" on:mousemove={handleMouseMove} on:mouseout={handleMouseOut}>
   {#each slices as slice, index}
     <path
       d={slice.path}
-      class="pie-slice"
+      class={`slice slice--${type}`}
       data-index={index}
-      style={`fill: ${colors[index]}; --active-transform: ${slice.activeTransform};`}
+      style={`--slice-color: ${slice.color}; --active-transform: ${slice.activeTransform};`}
     />
   {/each}
 </g>

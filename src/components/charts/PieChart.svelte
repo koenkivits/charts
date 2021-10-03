@@ -22,7 +22,7 @@
 
 <svelte:options namespace="svg" />
 <BaseChart type="pie" colors={colors}>
-  <PieSlices data={data} colors={colors} labels={labels} startAngle={startAngle} clockWise={clockWise} />
+  <PieSlices totals={sliceTotals} colors={colors} labels={labels} startAngle={startAngle} clockWise={clockWise} />
   <AggregateLegend
     slot="legend"
     labels={labels}
