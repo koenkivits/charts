@@ -23,6 +23,9 @@
   // TODO accessibility
   // - https://www.sarasoueidan.com/blog/accessible-data-charts-for-khan-academy-2018-annual-report/
   // - https://blog.tenon.io/accessible-charts-with-aria/
+  // - https://www.highcharts.com/blog/accessibility/#exploreFeatures
+  // - https://www.fusioncharts.com/extensions/accessibility
+  // (tabindex=-1 for data points etc) https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex
 
   const dimensions = getDimensions();
   const tooltip = getTooltip();
